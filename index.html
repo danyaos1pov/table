@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Стартовая страница</title>
+    <style>
+        :root {
+            --bg-gradient: radial-gradient(circle at 50% 50%, #14151f 0%, #0a0b10 100%);
+            --glass-bg: rgba(255, 255, 255, 0.02);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-glow: rgba(0, 242, 254, 0.08);
+            --text-main: #f1f1f4;
+            --text-muted: #62667a;
+            --accent: #00f2fe;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            overflow: hidden;
+        }
+
+        .bg-glow {
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(0, 242, 254, 0.02) 0%, transparent 70%);
+            top: -10%;
+            right: -10%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 1250px;
+            height: 85vh; /* Ограничиваем общую высоту, чтобы не ломать bento */
+            display: flex;
+            gap: 24px;
+        }
+
+        /* ЛЕВАЯ ПАНЕЛЬ */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 24px 16px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .profile-zone {
+            margin-bottom: 24px;
+            padding-left: 8px;
+        }
+
+        .profile-zone h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #fff 30%, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2px;
+        }
+
+        .profile-zone p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin: 12px 0 6px 8px;
+            font-weight: 700;
+        }
+
+        /* Плитки ссылок */
+        .link-tile {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .link-tile:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(0, 242, 254, 0.2);
+            transform: translateX(4px);
+        }
+
+        .link-tile .title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 5px;
+        }
+
+        /* ПРАВАЯ ЧАСТЬ */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto; /* Внутренний скролл, если контент на мелком экране не влезет */
+            padding-right: 8px;
+        }
+
+        /* Красивый тонкий скроллбар для контента */
+        .main-content::-webkit-scrollbar {
+            width: 5px;
+        }
+        .main-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .main-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        .main-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        /* Сетка быстрого доступа сверху */
+        .top-links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .top-links-grid .link-tile:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Сетка папок */
+        .folder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        /* Карточка папки */
+        .folder-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            height: 135px; /* Вернули комфортную высоту вместо 110px */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .folder-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.04);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .folder-card-header {
+            display: flex;
+            flex-direction: column; /* Изменили на колонку для более стильного Bento-вида */
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .folder-visual-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .folder-card:hover .folder-visual-icon {
+            color: var(--accent);
+            background: rgba(0, 242, 254, 0.05);
+            border-color: rgba(0, 242, 254, 0.2);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.1);
+        }
+
+        .folder-visual-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .folder-card-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .folder-card-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* ПОП-АП ОКНО */
+        .folder-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 11, 16, 0.4);
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .folder-overlay.is-active {
+            opacity: 1;
+            pointer-events: auto;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 24px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .folder-overlay.is-active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-right: 35px;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 22px;
+            right: 22px;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            transform: rotate(90deg);
+        }
+
+        .close-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.5;
+        }
+
+        .modal-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .modal-links::-webkit-scrollbar {
+            width: 4px;
+        }
+        .modal-links::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .nested-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .folder-overlay.is-active .nested-link {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Анимация появления контента */
+        .folder-overlay.is-active .nested-link:nth-child(1) { transition-delay: 0.04s; }
+        .folder-overlay.is-active .nested-link:nth-child(2) { transition-delay: 0.08s; }
+        .folder-overlay.is-active .nested-link:nth-child(3) { transition-delay: 0.12s; }
+        .folder-overlay.is-active .nested-link:nth-child(4) { transition-delay: 0.16s; }
+        .folder-overlay.is-active .nested-link:nth-child(5) { transition-delay: 0.20s; }
+        .folder-overlay.is-active .nested-link:nth-child(6) { transition-delay: 0.24s; }
+        .folder-overlay.is-active .nested-link:nth-child(7) { transition-delay: 0.28s; }
+
+        .nested-link:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(0, 242, 254, 0.3);
+            transform: translateX(4px);
+        }
+
+        .arrow-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .link-tile:hover .arrow-icon, .nested-link:hover .arrow-icon {
+            background: var(--accent);
+            color: #0a0b10;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .arrow-icon svg {
+            width: 12px;
+            height: 12px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.5;
+        }
+
+        /* Адаптив под совсем мелкие по высоте экраны */
+        @media (max-height: 780px) {
+            .container { height: 90vh; }
+            .folder-card { height: 125px; padding: 16px; }
+            .top-links-grid { margin-bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <div class="container">
+        
+        <!-- ЛЕВАЯ ПАНЕЛЬ -->
+        <aside class="sidebar">
+            <div class="profile-zone">
+                <h1 id="greeting">Привет</h1>
+                <p>Dashboard</p>
+            </div>
+            
+            <span class="sidebar-label">Избранное</span>
+            <div class="sidebar-links">
+                <a href="https://vk.com/feed" class="link-tile">
+                    <span class="title">ВКонтакте</span>
+                    <div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                </a>
+                <a href="https://www.youtube.com/" class="link-tile">
+                    <span class="title">YouTube</span>
+                    <div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                </a>
+            </div>
+        </aside>
+
+        <!-- ПРАВАЯ ПАНЕЛЬ -->
+        <main class="main-content">
+            
+            <span class="section-title">Быстрый доступ</span>
+            <div class="top-links-grid">
+                <a href="https://docs.google.com/spreadsheets/" class="link-tile">
+                    <span class="title">Google Таблицы</span>
+                    <div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                </a>
+                <a href="https://htmleditor.gitlab.io/" class="link-tile">
+                    <span class="title">Редактор HTML</span>
+                    <div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                </a>
+                <a href="https://github.com/danyaos1pov?tab=repositories" class="link-tile">
+                    <span class="title">GitHub</span>
+                    <div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                </a>
+                <a href="https://supabase.com/dashboard/project/yvnnngfzzjdbeiscwluy/editor/17540?schema=public" class="link-tile">
+                    <span class="title">Supabase</span>
+                    <div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                </a>
+                <a href="https://pocomacho.ru/solonetbot/" class="link-tile">
+                    <span class="title">SoloBot</span>
+                    <div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                </a>
+                <a href="https://hosting.timeweb.ru/domains?page=1" class="link-tile">
+                    <span class="title">Домен</span>
+                    <div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                </a>
+                <a href="https://detector404.ru/" class="link-tile">
+                    <span class="title">detector404</span>
+                    <div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                </a>
+            </div>
+
+            <span class="section-title">Категории</span>
+            <div class="folder-grid">
+                
+                <!-- ИИ -->
+                <div class="folder-card" data-target="folder-ai">
+                    <div class="folder-card-header">
+                        <div class="folder-visual-icon">
+                            <!-- Иконка нейросети / процессора -->
+                            <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9zm0-5V2m6 2V2M9 22v-2m6 2v-2M2 9h2m-2 5h2m16-5h2m-2 5h2"/></svg>
+                        </div>
+                        <span class="folder-card-title">ИИ</span>
+                    </div>
+                    <span class="folder-card-meta">4 ссылки</span>
+                </div>
+
+                <!-- Маркетплейсы -->
+                <div class="folder-card" data-target="folder-marketplaces">
+                    <div class="folder-card-header">
+                        <div class="folder-visual-icon">
+                            <!-- Иконка корзины покупок -->
+                            <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                        </div>
+                        <span class="folder-card-title">Маркетплейсы</span>
+                    </div>
+                    <span class="folder-card-meta">3 ссылки</span>
+                </div>
+
+                <!-- Хостинг -->
+                <div class="folder-card" data-target="folder-hosting">
+                    <div class="folder-card-header">
+                        <div class="folder-visual-icon">
+                            <!-- Иконка сервера -->
+                            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                        </div>
+                        <span class="folder-card-title">Хостинг</span>
+                    </div>
+                    <span class="folder-card-meta">7 ссылок</span>
+                </div>
+
+                <!-- Почта -->
+                <div class="folder-card" data-target="folder-mail">
+                    <div class="folder-card-header">
+                        <div class="folder-visual-icon">
+                            <!-- Иконка письма / конверта -->
+                            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </div>
+                        <span class="folder-card-title">Почта</span>
+                    </div>
+                    <span class="folder-card-meta">4 ссылки</span>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- МОДАЛЬНЫЙ ОВЕРЛЕЙ -->
+    <div class="folder-overlay" id="folder-overlay">
+        <div class="modal-content" id="folder-overlay-content">
+            <div class="close-btn" id="modal-close-btn">
+                <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </div>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- ШАБЛОНЫ ДЛЯ ПАПОК -->
+    <template id="folder-ai-template">
+        <div class="modal-header"><span class="modal-title">Искусственный Интеллект</span></div>
+        <div class="modal-links">
+            <a href="https://chatgpt.com/" class="nested-link"><span>ChatGPT</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+            <a href="https://gemini.google.com/app" class="nested-link"><span>Gemini</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+            <a href="https://grok.com/" class="nested-link"><span>Grok</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+            <a href="https://www.perplexity.ai/" class="nested-link"><span>Perplexity</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+        </div>
+    </template>
+
+    <template id="folder-marketplaces-template">
+        <div class="modal-header"><span class="modal-title">Маркетплейсы</span></div>
+        <div class="modal-links">
+            <a href="https://www.ozon.ru/" class="nested-link"><span>OZON</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+            <a href="https://market.yandex.ru/" class="nested-link"><span>Яндекс Маркет</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+            <a href="https://avito.ru" class="nested-link"><span>Авито</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+        </div>
+    </template>
+
+    <template id="folder-hosting-template">
+        <div class="modal-header"><span class="modal-title">Хостинг</span></div>
+        <div class="modal-links">
+            <a href="https://my.aeza.net/" class="nested-link"><span>Aeza</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+            <a href="http://billing.spacecore.pro/" class="nested-link"><span>Spacecore</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+            <a href="https://panel.hostoff.net/services/virtual-servers" class="nested-link"><span>Hostoff</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+            <a href="https://timeweb.cloud/my/servers/6595709" class="nested-link"><span>Timeweb</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+            <a href="https://my.it-garage.pro/" class="nested-link"><span>IT-Garage</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+            <a href="https://play2go.cloud/" class="nested-link"><span>Play2GO</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+            <a href="https://serv.host/" class="nested-link"><span>ServHost</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+        </div>
+    </template>
+
+    <template id="folder-mail-template">
+        <div class="modal-header"><span class="modal-title">Почта</span></div>
+        <div class="modal-links">
+            <a href="https://e.mail.ru/inbox/" class="nested-link"><span>Mail Почта</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+            <a href="https://mail.yandex.ru/" class="nested-link"><span>Яндекс Почта</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+            <a href="https://mail.google.com/mail/u/0/#inbox" class="nested-link"><span>Google Почта</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+            <a href="https://mail.tm/ru/" class="nested-link"><span>Временная почта</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+        </div>
+    </template>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const greetingElement = document.getElementById('greeting');
+            const hours = new Date().getHours();
+            let greetingText = 'Привет';
+
+            if (hours >= 5 && hours < 12) greetingText = 'Доброе утро';
+            else if (hours >= 12 && hours < 18) greetingText = 'Добрый день';
+            else if (hours >= 18 && hours < 23) greetingText = 'Добрый вечер';
+            else greetingText = 'Доброй ночи';
+
+            greetingElement.textContent = greetingText;
+
+            const cards = document.querySelectorAll('.folder-card');
+            const overlay = document.getElementById('folder-overlay');
+            const modalBody = document.getElementById('modal-body');
+            const closeBtn = document.getElementById('modal-close-btn');
+
+            const closeFolder = () => overlay.classList.remove('is-active');
+
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const targetId = card.getAttribute('data-target');
+                    const template = document.getElementById(`${targetId}-template`);
+                    if (template) {
+                        modalBody.innerHTML = '';
+                        modalBody.appendChild(template.content.cloneNode(true));
+                        overlay.classList.add('is-active');
+                    }
+                });
+            });
+
+            closeBtn.addEventListener('click', closeFolder);
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) closeFolder(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeFolder(); });
+        });
+    </script>
+</body>
+</html>
