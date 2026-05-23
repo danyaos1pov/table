@@ -50,7 +50,7 @@
             z-index: 1;
             width: 100%;
             max-width: 1250px;
-            height: 85vh; /* Ограничиваем общую высоту, чтобы не ломать bento */
+            height: 85vh;
             display: flex;
             gap: 24px;
         }
@@ -118,6 +118,7 @@
             text-decoration: none;
             color: var(--text-main);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
         }
 
         .link-tile:hover {
@@ -140,11 +141,10 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            overflow-y: auto; /* Внутренний скролл, если контент на мелком экране не влезет */
+            overflow-y: auto;
             padding-right: 8px;
         }
 
-        /* Красивый тонкий скроллбар для контента */
         .main-content::-webkit-scrollbar {
             width: 5px;
         }
@@ -159,6 +159,211 @@
             background: rgba(255, 255, 255, 0.1);
         }
 
+        /* ПОИСКОВАЯ СТРОКА */
+        .search-container {
+            margin-bottom: 24px;
+            position: relative;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            z-index: 5;
+        }
+
+        .search-container:focus-within {
+            border-color: rgba(0, 242, 254, 0.25);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.05);
+            z-index: 50;
+        }
+
+        .search-form {
+            display: flex;
+            width: 100%;
+            align-items: center;
+        }
+
+        /* Селектор поисковика */
+        .search-engine-selector {
+            position: relative;
+            margin-right: 8px;
+        }
+
+        .current-engine {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .current-engine:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .current-engine svg {
+            width: 10px;
+            height: 10px;
+            fill: none;
+            stroke: var(--text-muted);
+            stroke-width: 2.5;
+            transition: transform 0.3s ease;
+        }
+
+        .search-engine-selector.is-active .current-engine svg {
+            transform: rotate(180deg);
+            stroke: var(--accent);
+        }
+
+        .engine-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            background: #0f1017;
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 6px;
+            min-width: 140px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            z-index: 10;
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .search-engine-selector.is-active .engine-dropdown {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .engine-option {
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .engine-option:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
+        }
+
+        .engine-option.is-selected {
+            color: var(--accent);
+            background: rgba(0, 242, 254, 0.03);
+        }
+
+        /* Поле ввода */
+        .search-input-wrapper {
+            position: relative;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 10px 36px 10px 4px;
+            font-size: 1rem;
+            color: var(--text-main);
+            font-family: inherit;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Кнопка мгновенной очистки */
+        .search-clear-btn {
+            position: absolute;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s ease;
+        }
+
+        .search-clear-btn.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .search-clear-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+        }
+
+        .search-clear-btn svg {
+            width: 12px;
+            height: 12px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.5;
+        }
+
+        /* Кнопка отправки */
+        .search-submit-btn {
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .search-submit-btn:hover {
+            background: var(--accent);
+            color: #0a0b10;
+            box-shadow: 0 0 12px var(--accent);
+        }
+
+        .search-submit-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.5;
+        }
+
         .section-title {
             font-size: 0.75rem;
             text-transform: uppercase;
@@ -168,7 +373,7 @@
             font-weight: 700;
         }
 
-        /* Сетка быстрого доступа сверху */
+        /* Сетки контента */
         .top-links-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -180,7 +385,6 @@
             transform: translateY(-2px);
         }
 
-        /* Сетка папок */
         .folder-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -193,7 +397,7 @@
             border: 1px solid var(--glass-border);
             border-radius: 20px;
             padding: 20px;
-            height: 135px; /* Вернули комфортную высоту вместо 110px */
+            height: 135px;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             display: flex;
@@ -212,7 +416,7 @@
 
         .folder-card-header {
             display: flex;
-            flex-direction: column; /* Изменили на колонку для более стильного Bento-вида */
+            flex-direction: column;
             gap: 12px;
             align-items: flex-start;
         }
@@ -384,7 +588,6 @@
             transform: translateY(0);
         }
 
-        /* Анимация появления контента */
         .folder-overlay.is-active .nested-link:nth-child(1) { transition-delay: 0.04s; }
         .folder-overlay.is-active .nested-link:nth-child(2) { transition-delay: 0.08s; }
         .folder-overlay.is-active .nested-link:nth-child(3) { transition-delay: 0.12s; }
@@ -426,11 +629,58 @@
             stroke-width: 2.5;
         }
 
-        /* Адаптив под совсем мелкие по высоте экраны */
+        /* Стиль для кастомного окна ввода пароля */
+        .password-prompt-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 10px;
+        }
+
+        .password-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .password-input:focus {
+            border-color: var(--accent);
+        }
+
+        .password-error-msg {
+            color: #ff4a4a;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .password-submit-btn {
+            background: var(--accent);
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #0a0b10;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .password-submit-btn:hover {
+            box-shadow: 0 0 12px var(--accent);
+            opacity: 0.9;
+        }
+
         @media (max-height: 780px) {
             .container { height: 90vh; }
             .folder-card { height: 125px; padding: 16px; }
             .top-links-grid { margin-bottom: 20px; }
+            .search-container { margin-bottom: 20px; }
         }
     </style>
 </head>
@@ -440,7 +690,6 @@
 
     <div class="container">
         
-        <!-- ЛЕВАЯ ПАНЕЛЬ -->
         <aside class="sidebar">
             <div class="profile-zone">
                 <h1 id="greeting">Привет</h1>
@@ -457,11 +706,39 @@
                     <span class="title">YouTube</span>
                     <div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
                 </a>
+                <div class="link-tile" id="secret-tile" data-target="folder-secret" data-protected="true">
+                    <span class="title">Секретное</span>
+                    <div class="arrow-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                </div>
             </div>
         </aside>
 
-        <!-- ПРАВАЯ ПАНЕЛЬ -->
         <main class="main-content">
+            
+            <div class="search-container">
+                <form class="search-form" id="searchForm" target="_blank" action="https://yandex.ru/search/">
+                    <div class="search-engine-selector" id="engineSelector">
+                        <div class="current-engine" id="currentEngine">
+                            <span id="engineLabel">Яндекс</span>
+                            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                        <div class="engine-dropdown">
+                            <div class="engine-option is-selected" data-engine="yandex" data-action="https://yandex.ru/search/" data-query="text">Яндекс</div>
+                            <div class="engine-option" data-engine="google" data-action="https://www.google.com/search" data-query="q">Google</div>
+                            <div class="engine-option" data-engine="duckduckgo" data-action="https://duckduckgo.com/" data-query="q">DuckDuckGo</div>
+                        </div>
+                    </div>
+                    <div class="search-input-wrapper">
+                        <input type="text" class="search-input" id="searchInput" name="text" placeholder="Поиск в Яндекс..." autocomplete="off">
+                        <button type="button" class="search-clear-btn" id="searchClearBtn" title="Очистить запрос">
+                            <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                    <button type="submit" class="search-submit-btn">
+                        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+                </form>
+            </div>
             
             <span class="section-title">Быстрый доступ</span>
             <div class="top-links-grid">
@@ -498,11 +775,9 @@
             <span class="section-title">Категории</span>
             <div class="folder-grid">
                 
-                <!-- ИИ -->
                 <div class="folder-card" data-target="folder-ai">
                     <div class="folder-card-header">
                         <div class="folder-visual-icon">
-                            <!-- Иконка нейросети / процессора -->
                             <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9zm0-5V2m6 2V2M9 22v-2m6 2v-2M2 9h2m-2 5h2m16-5h2m-2 5h2"/></svg>
                         </div>
                         <span class="folder-card-title">ИИ</span>
@@ -510,11 +785,9 @@
                     <span class="folder-card-meta">4 ссылки</span>
                 </div>
 
-                <!-- Маркетплейсы -->
                 <div class="folder-card" data-target="folder-marketplaces">
                     <div class="folder-card-header">
                         <div class="folder-visual-icon">
-                            <!-- Иконка корзины покупок -->
                             <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                         </div>
                         <span class="folder-card-title">Маркетплейсы</span>
@@ -522,11 +795,9 @@
                     <span class="folder-card-meta">3 ссылки</span>
                 </div>
 
-                <!-- Хостинг -->
                 <div class="folder-card" data-target="folder-hosting">
                     <div class="folder-card-header">
                         <div class="folder-visual-icon">
-                            <!-- Иконка сервера -->
                             <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
                         </div>
                         <span class="folder-card-title">Хостинг</span>
@@ -534,11 +805,9 @@
                     <span class="folder-card-meta">7 ссылок</span>
                 </div>
 
-                <!-- Почта -->
                 <div class="folder-card" data-target="folder-mail">
                     <div class="folder-card-header">
                         <div class="folder-visual-icon">
-                            <!-- Иконка письма / конверта -->
                             <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                         </div>
                         <span class="folder-card-title">Почта</span>
@@ -550,7 +819,6 @@
         </main>
     </div>
 
-    <!-- МОДАЛЬНЫЙ ОВЕРЛЕЙ -->
     <div class="folder-overlay" id="folder-overlay">
         <div class="modal-content" id="folder-overlay-content">
             <div class="close-btn" id="modal-close-btn">
@@ -560,7 +828,15 @@
         </div>
     </div>
 
-    <!-- ШАБЛОНЫ ДЛЯ ПАПОК -->
+    <template id="password-prompt-template">
+        <div class="modal-header"><span class="modal-title">Доступ ограничен</span></div>
+        <form class="password-prompt-container" id="passwordForm">
+            <input type="password" class="password-input" id="folderPasswordInput" placeholder="Введите пароль..." autocomplete="off">
+            <div class="password-error-msg" id="passwordError">Неверный пароль!</div>
+            <button type="submit" class="password-submit-btn">Войти</button>
+        </form>
+    </template>
+
     <template id="folder-ai-template">
         <div class="modal-header"><span class="modal-title">Искусственный Интеллект</span></div>
         <div class="modal-links">
@@ -603,8 +879,17 @@
         </div>
     </template>
 
+    <template id="folder-secret-template">
+        <div class="modal-header"><span class="modal-title">Секретное</span></div>
+        <div class="modal-links">
+            <a href="https://vk.com/danyaos1pov" class="nested-link"><span>VK</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+            <a href="https://vk.com/danyaosipov" class="nested-link"><span>VK2</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+        </div>
+    </template>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Динамическое приветствие
             const greetingElement = document.getElementById('greeting');
             const hours = new Date().getHours();
             let greetingText = 'Привет';
@@ -616,7 +901,76 @@
 
             greetingElement.textContent = greetingText;
 
-            const cards = document.querySelectorAll('.folder-card');
+            // Контейнер поиска для динамического управления слоями
+            const searchContainer = document.querySelector('.search-container');
+            const engineSelector = document.getElementById('engineSelector');
+            const currentEngine = document.getElementById('currentEngine');
+            const engineLabel = document.getElementById('engineLabel');
+            const searchForm = document.getElementById('searchForm');
+            const searchInput = document.getElementById('searchInput');
+            const searchClearBtn = document.getElementById('searchClearBtn');
+            const options = document.querySelectorAll('.engine-option');
+
+            // Открытие выпадающего списка + фикс слоев через JS
+            currentEngine.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isActive = engineSelector.classList.toggle('is-active');
+                searchContainer.style.zIndex = isActive ? '50' : '5';
+            });
+
+            // Выбор поисковика
+            options.forEach(option => {
+                option.addEventListener('click', () => {
+                    options.forEach(opt => opt.classList.remove('is-selected'));
+                    option.classList.add('is-selected');
+
+                    const engineName = option.innerText;
+                    const actionUrl = option.getAttribute('data-action');
+                    const queryParam = option.getAttribute('data-query');
+
+                    engineLabel.textContent = engineName;
+                    searchForm.setAttribute('action', actionUrl);
+                    searchInput.setAttribute('name', queryParam);
+                    searchInput.placeholder = `Поиск в ${engineName}...`;
+                    
+                    engineSelector.classList.remove('is-active');
+                    searchContainer.style.zIndex = '5';
+                    searchInput.focus();
+                });
+            });
+
+            // Закрытие селектора по клику мимо + сброс слоев
+            document.addEventListener('click', () => {
+                engineSelector.classList.remove('is-active');
+                searchContainer.style.zIndex = '5';
+            });
+
+            // Контроль видимости крестика при вводе текста
+            searchInput.addEventListener('input', () => {
+                if (searchInput.value.trim().length > 0) {
+                    searchClearBtn.classList.add('is-visible');
+                } else {
+                    searchClearBtn.classList.remove('is-visible');
+                }
+            });
+
+            // Клик по крестику — очистить строку
+            searchClearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                searchClearBtn.classList.remove('is-visible');
+                searchInput.focus();
+            });
+
+            // Автоочистка после отправки формы
+            searchForm.addEventListener('submit', () => {
+                setTimeout(() => {
+                    searchInput.value = '';
+                    searchClearBtn.classList.remove('is-visible');
+                }, 100);
+            });
+
+            // Модальные окна для папок и секретного блока
+            const cards = document.querySelectorAll('.folder-card, #secret-tile');
             const overlay = document.getElementById('folder-overlay');
             const modalBody = document.getElementById('modal-body');
             const closeBtn = document.getElementById('modal-close-btn');
@@ -625,7 +979,38 @@
 
             cards.forEach(card => {
                 card.addEventListener('click', () => {
+                    const isProtected = card.getAttribute('data-protected') === 'true';
                     const targetId = card.getAttribute('data-target');
+                    
+                    if (isProtected) {
+                        const passwordTemplate = document.getElementById('password-prompt-template');
+                        modalBody.innerHTML = '';
+                        modalBody.appendChild(passwordTemplate.content.cloneNode(true));
+                        overlay.classList.add('is-active');
+                        
+                        const passwordInput = document.getElementById('folderPasswordInput');
+                        passwordInput.focus();
+
+                        const passwordForm = document.getElementById('passwordForm');
+                        const passwordError = document.getElementById('passwordError');
+
+                        passwordForm.addEventListener('submit', (e) => {
+                            e.preventDefault();
+                            if (passwordInput.value === '4815162342') {
+                                const template = document.getElementById(`${targetId}-template`);
+                                if (template) {
+                                    modalBody.innerHTML = '';
+                                    modalBody.appendChild(template.content.cloneNode(true));
+                                }
+                            } else {
+                                passwordError.style.display = 'block';
+                                passwordInput.value = '';
+                                passwordInput.focus();
+                            }
+                        });
+                        return;
+                    }
+
                     const template = document.getElementById(`${targetId}-template`);
                     if (template) {
                         modalBody.innerHTML = '';
