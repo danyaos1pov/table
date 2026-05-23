@@ -682,6 +682,174 @@
             .top-links-grid { margin-bottom: 20px; }
             .search-container { margin-bottom: 20px; }
         }
+
+        /* МЕДИА-ЗАПРОСЫ ДЛЯ АДАПТАЦИИ ПОД ТЕЛЕФОНЫ */
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+                padding: 12px;
+                align-items: flex-start;
+            }
+
+            .bg-glow {
+                width: 300px;
+                height: 300px;
+            }
+
+            .container {
+                flex-direction: column;
+                height: auto;
+                gap: 16px;
+            }
+
+            /* Боковая панель сверху */
+            .sidebar {
+                width: 100%;
+                padding: 16px;
+                border-radius: 20px;
+            }
+
+            .profile-zone {
+                margin-bottom: 16px;
+            }
+
+            .profile-zone h1 {
+                font-size: 1.4rem;
+            }
+
+            .sidebar-links {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            /* Основной контент */
+            .main-content {
+                padding-right: 0;
+                overflow-y: visible;
+            }
+
+            /* Поисковая строка */
+            .search-container {
+                padding: 4px;
+                border-radius: 14px;
+                margin-bottom: 16px;
+            }
+
+            .current-engine {
+                padding: 8px 10px;
+                font-size: 0.8rem;
+                border-radius: 10px;
+                gap: 4px;
+            }
+
+            .search-input {
+                font-size: 0.9rem;
+                padding: 8px 30px 8px 2px;
+            }
+
+            .search-submit-btn {
+                width: 34px;
+                height: 34px;
+                border-radius: 10px;
+            }
+
+            .engine-dropdown {
+                min-width: 120px;
+                top: calc(100% + 6px);
+            }
+
+            .engine-option {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+
+            /* Сетки ссылок */
+            .top-links-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 8px;
+                margin-bottom: 20px;
+            }
+
+            .link-tile {
+                padding: 12px;
+                border-radius: 12px;
+            }
+
+            .link-tile .title {
+                font-size: 0.85rem;
+            }
+
+            .arrow-icon {
+                width: 24px;
+                height: 24px;
+            }
+
+            /* Папки */
+            .folder-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 10px;
+            }
+
+            .folder-card {
+                padding: 14px;
+                height: 110px;
+                border-radius: 16px;
+            }
+
+            .folder-visual-icon {
+                width: 32px;
+                height: 32px;
+                border-radius: 10px;
+            }
+
+            .folder-visual-icon svg {
+                width: 16px;
+                height: 16px;
+            }
+
+            .folder-card-title {
+                font-size: 0.9rem;
+            }
+
+            .folder-card-meta {
+                font-size: 0.75rem;
+            }
+
+            /* Окна всплытия (Модалки) */
+            .modal-content {
+                max-width: calc(100% - 24px);
+                padding: 20px;
+                border-radius: 20px;
+            }
+
+            .modal-title {
+                font-size: 1.1rem;
+            }
+
+            .close-btn {
+                top: 18px;
+                right: 18px;
+                width: 28px;
+                height: 28px;
+            }
+
+            .modal-links {
+                max-height: 300px;
+            }
+
+            .nested-link {
+                padding: 12px 14px;
+                border-radius: 12px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .top-links-grid, .folder-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
     </style>
 </head>
 <body>
@@ -815,6 +983,16 @@
                     <span class="folder-card-meta">4 ссылки</span>
                 </div>
 
+                <div class="folder-card" data-target="folder-servers">
+                    <div class="folder-card-header">
+                        <div class="folder-visual-icon">
+                            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="6" rx="2"/><rect x="2" y="16" width="20" height="6" rx="2"/><rect x="2" y="9" width="20" height="6" rx="2"/><line x1="6" y1="5" x2="6.01" y2="5"/><line x1="6" y1="12" x2="6.01" y2="12"/><line x1="6" y1="19" x2="6.01" y2="19"/></svg>
+                        </div>
+                        <span class="folder-card-title">Сервера</span>
+                    </div>
+                    <span class="folder-card-meta">1 ссылка</span>
+                </div>
+
             </div>
         </main>
     </div>
@@ -876,6 +1054,13 @@
             <a href="https://mail.yandex.ru/" class="nested-link"><span>Яндекс Почта</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
             <a href="https://mail.google.com/mail/u/0/#inbox" class="nested-link"><span>Google Почта</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
             <a href="https://mail.tm/ru/" class="nested-link"><span>Временная почта</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
+        </div>
+    </template>
+
+    <template id="folder-servers-template">
+        <div class="modal-header"><span class="modal-title">Сервера</span></div>
+        <div class="modal-links">
+            <a href="https://on1xvpn.ru" class="nested-link"><span>ON1X VPN</span><div class="arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></a>
         </div>
     </template>
 
@@ -1022,7 +1207,7 @@
 
             closeBtn.addEventListener('click', closeFolder);
             overlay.addEventListener('click', (e) => { if (e.target === overlay) closeFolder(); });
-            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeFolder(); });
+            document.addEventListener('keydown', (e) => { if (e.key('Escape')) closeFolder(); });
         });
     </script>
 </body>
